@@ -4,3 +4,11 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+dioxus = { version = "0.5", features = ["fullstack", "router"] }
+dioxus-logger = "0.5"
+serde = { version = "1", features = ["derive"] }
+
+[features]
+default = []
+server = ["dioxus/axum"]
+web = ["dioxus/web"]
