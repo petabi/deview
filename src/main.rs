@@ -52,7 +52,7 @@ fn NavBar() -> Element {
 
 #[component]
 fn Home() -> Element {
-    rsx! {  }
+    rsx! {}
 }
 
 #[component]
