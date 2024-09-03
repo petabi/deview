@@ -4,9 +4,12 @@ use dioxus::prelude::*;
 use dioxus_logger::tracing;
 
 #[derive(Clone, Routable, Debug, PartialEq, serde::Serialize, serde::Deserialize)]
+#[rustfmt::skip]
 enum Route {
-    #[route("/")]
-    Home {},
+    #[layout(NavBar)]
+        #[route("/")]
+        Home {},
+    #[end_layout]
     #[route("/:..route")]
     PageNotFound { route: Vec<String> },
 }
@@ -24,10 +27,22 @@ fn App() -> Element {
 }
 
 #[component]
-fn Home() -> Element {
+fn NavBar() -> Element {
     rsx! {
-        h1 { class: "text-3xl font-bold", "Deview" }
+        nav {
+            ul {
+                li {
+                    Link { to: Route::Home {}, "DEVIEW" }
+                }
+            }
+        }
+        Outlet::<Route> {}
     }
+}
+
+#[component]
+fn Home() -> Element {
+    rsx! {  }
 }
 
 #[component]
