@@ -7,6 +7,8 @@ use dioxus_logger::tracing;
 enum Route {
     #[route("/")]
     Home {},
+    #[route("/:..route")]
+    PageNotFound { route: Vec<String> },
 }
 
 fn main() {
@@ -25,5 +27,14 @@ fn App() -> Element {
 fn Home() -> Element {
     rsx! {
         h1 { class: "text-3xl font-bold", "Deview" }
+    }
+}
+
+#[component]
+fn PageNotFound(route: Vec<String>) -> Element {
+    rsx! {
+        h1 { "Page not found" }
+        p { "We are terribly sorry, but the page you requested doesn't exist." }
+        pre { color: "red", "log:\nattemped to navigate to: {route:?}" }
     }
 }
