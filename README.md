@@ -71,9 +71,9 @@ With the prerequisites installed, follow these steps to build and run Deview:
 
 ### Troubleshooting Tips
 
-- **Dioxus CLI Not Found**: If you encounter an error about the Dioxus CLI not
+* **Dioxus CLI Not Found**: If you encounter an error about the Dioxus CLI not
   being found, ensure it was installed correctly using Cargo.
-- **Port Already in Use**: If port 8080 is in use, you can specify a different
+* **Port Already in Use**: If port 8080 is in use, you can specify a different
   port by adding the `--port` option when launching Deview:
 
   ```sh
