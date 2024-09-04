@@ -1,4 +1,8 @@
 #![allow(non_snake_case)]
+// mod auth;
+mod config;
+
+use std::{env, process::exit};
 
 use dioxus::prelude::*;
 use dioxus_logger::tracing;
@@ -14,10 +18,54 @@ enum Route {
     PageNotFound { route: Vec<String> },
 }
 
-fn main() {
+#[tokio::main]
+async fn main() -> anyhow::Result<()> {
     dioxus_logger::init(tracing::Level::INFO).expect("failed to init logger");
     tracing::info!("starting app");
+    let config = config::Config::load_config(parse().as_deref()).expect("failed to load config");
+    let _review = config.to_review().await.expect("fail to initiate review");
+
     launch(App);
+    Ok(())
+}
+
+fn parse() -> Option<String> {
+    let args = env::args().collect::<Vec<_>>();
+    if args.len() <= 1 {
+        return None;
+    }
+
+    if args[1] == "--help" || args[1] == "-h" {
+        println!("{} {}", package(), version());
+        println!();
+        println!(
+            "USAGE: \
+            \n    {} [CONFIG] \
+            \n \
+            \nFLAGS: \
+            \n    -h, --help       Prints help information \
+            \n    -V, --version    Prints version information \
+            \n \
+            \nARG: \
+            \n    <CONFIG>    A TOML config file",
+            package()
+        );
+        exit(0);
+    }
+    if args[1] == "--version" || args[1] == "-V" {
+        println!("{}", version());
+        exit(0);
+    }
+
+    Some(args[1].clone())
+}
+
+fn version() -> &'static str {
+    env!("CARGO_PKG_VERSION")
+}
+
+fn package() -> &'static str {
+    env!("CARGO_PKG_NAME")
 }
 
 fn App() -> Element {
