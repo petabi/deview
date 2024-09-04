@@ -1,4 +1,8 @@
 #![allow(non_snake_case)]
+mod config;
+mod review;
+
+use std::{env, process::exit};
 
 use dioxus::prelude::*;
 use dioxus_logger::tracing;
@@ -14,10 +18,56 @@ enum Route {
     PageNotFound { route: Vec<String> },
 }
 
-fn main() {
+#[tokio::main]
+async fn main() -> anyhow::Result<()> {
+    use dioxus::prelude::LaunchBuilder;
+
     dioxus_logger::init(tracing::Level::INFO).expect("failed to init logger");
     tracing::info!("starting app");
-    launch(App);
+    let config = config::Config::load_config(parse().as_deref()).expect("failed to load config");
+    let review = config.to_review().await.expect("fail to initiate review");
+
+    LaunchBuilder::new().with_context(review).launch(App);
+    Ok(())
+}
+
+fn parse() -> Option<String> {
+    let args = env::args().collect::<Vec<_>>();
+    if args.len() <= 1 {
+        return None;
+    }
+
+    if args[1] == "--help" || args[1] == "-h" {
+        println!("{} {}", package(), version());
+        println!();
+        println!(
+            "USAGE: \
+            \n    {} [CONFIG] \
+            \n \
+            \nFLAGS: \
+            \n    -h, --help       Prints help information \
+            \n    -V, --version    Prints version information \
+            \n \
+            \nARG: \
+            \n    <CONFIG>    A TOML config file",
+            package()
+        );
+        exit(0);
+    }
+    if args[1] == "--version" || args[1] == "-V" {
+        println!("{}", version());
+        exit(0);
+    }
+
+    Some(args[1].clone())
+}
+
+fn version() -> &'static str {
+    env!("CARGO_PKG_VERSION")
+}
+
+fn package() -> &'static str {
+    env!("CARGO_PKG_NAME")
 }
 
 fn App() -> Element {
@@ -52,7 +102,21 @@ fn NavBar() -> Element {
 
 #[component]
 fn Home() -> Element {
-    rsx! {}
+    let mut user = use_signal(|| "admin".to_string());
+    let mut password = use_signal(|| "admin".to_string());
+    rsx! {
+        form { onsubmit: move |event| async move {
+            tracing::info!("Submitted! {event:?}");
+            review::SignIn(user(), password());
+         },
+            input { value: "{user}",
+            oninput: move |event| user.set(event.value()) }
+            input { value: "{password}",
+            oninput: move |event| password.set(event.value()) }
+
+            input { r#type: "submit" }
+        }
+    }
 }
 
 #[component]

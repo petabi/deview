@@ -4,9 +4,17 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+anyhow = "1.0.86"
+chrono = { version = ">=0.4.35", default-features = false, features = [
+  "serde",
+] }
+config = "0.14.0"
 dioxus = { version = "0.5", features = ["fullstack", "router"] }
 dioxus-logger = "0.5"
+jsonwebtoken = "9.3.0"
+review-database = { git = "https://github.com/petabi/review-database.git", tag = "0.30.0"}
 serde = { version = "1", features = ["derive"] }
+tokio = { version = "1.40.0", features = ["macros", "rt-multi-thread"] }
 
 [features]
 default = []
