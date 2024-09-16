@@ -1,5 +1,8 @@
 #![allow(non_snake_case)]
 
+mod components;
+
+use components::Footer;
 use dioxus::prelude::*;
 use dioxus_logger::tracing;
 
@@ -47,6 +50,7 @@ fn NavBar() -> Element {
             }
         }
         Outlet::<Route> {}
+        Footer {}
     }
 }
 
