@@ -4,11 +4,20 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+axum = { version = "0.7.5", optional = true }
 dioxus = { version = "0.5", features = ["fullstack", "router"] }
 dioxus-logger = "0.5"
+dioxus-web = { version = "0.5.6", features = ["hydrate"], optional = true }
 serde = { version = "1", features = ["derive"] }
+tokio = { version = "1.16.1", default-features = false, features = [
+    "sync",
+    "macros",
+    "io-util",
+    "rt",
+    "time"
+], optional = true }
 
 [features]
 default = []
-server = ["dioxus/axum"]
-web = ["dioxus/web"]
+server = ["dioxus/axum", "tokio", "axum"]
+web = ["dioxus-web"]

@@ -4,7 +4,6 @@ mod components;
 
 use components::Footer;
 use dioxus::prelude::*;
-use dioxus_logger::tracing;
 
 #[derive(Clone, Routable, Debug, PartialEq, serde::Serialize, serde::Deserialize)]
 #[rustfmt::skip]
@@ -18,11 +17,38 @@ enum Route {
 }
 
 fn main() {
-    dioxus_logger::init(tracing::Level::INFO).expect("failed to init logger");
-    tracing::info!("starting app");
-    launch(App);
+    #[cfg(feature = "web")]
+    // Hydrate the application on the client
+    dioxus_web::launch::launch_cfg(App, dioxus_web::Config::new().hydrate(true));
+
+    #[cfg(feature = "server")]
+    {
+        use axum::Router;
+        use dioxus_logger::tracing;
+
+        dioxus_logger::init(tracing::Level::INFO).expect("failed to init logger");
+        tracing::info!("starting app");
+
+        tokio::runtime::Runtime::new()
+            .unwrap()
+            .block_on(async move {
+                let app = Router::new()
+                    // Server side render the application, serve static assets, and register server functions
+                    .serve_dioxus_application(ServeConfig::builder().build(), || {
+                        VirtualDom::new(App)
+                    })
+                    .await;
+                let addr = std::net::SocketAddr::from(([127, 0, 0, 1], 8080));
+                let listener = tokio::net::TcpListener::bind(&addr).await.unwrap();
+
+                axum::serve(listener, app.into_make_service())
+                    .await
+                    .unwrap();
+            });
+    }
 }
 
+#[cfg(any(feature = "server", feature = "web"))]
 fn App() -> Element {
     rsx! {
         Router::<Route> {}
