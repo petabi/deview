@@ -1,6 +1,8 @@
 #![allow(non_snake_case)]
 
 mod components;
+#[cfg(feature = "server")]
+mod config;
 
 use components::Footer;
 use dioxus::prelude::*;
@@ -29,6 +31,8 @@ fn main() {
         dioxus_logger::init(tracing::Level::INFO).expect("failed to init logger");
         tracing::info!("starting app");
 
+        let _config =
+            dbg!(config::Config::load_config(parse().as_deref()).expect("fail to load config"));
         tokio::runtime::Runtime::new()
             .unwrap()
             .block_on(async move {
@@ -92,4 +96,47 @@ fn PageNotFound(route: Vec<String>) -> Element {
         p { "We are terribly sorry, but the page you requested doesn't exist." }
         pre { color: "red", "log:\nattemped to navigate to: {route:?}" }
     }
+}
+
+#[cfg(feature = "server")]
+fn parse() -> Option<String> {
+    use std::process::exit;
+    let args = std::env::args().collect::<Vec<_>>();
+    if args.len() <= 1 {
+        return None;
+    }
+
+    if args[1] == "--help" || args[1] == "-h" {
+        println!("{} {}", package(), version());
+        println!();
+        println!(
+            "USAGE: \
+            \n    {} [CONFIG] \
+            \n \
+            \nFLAGS: \
+            \n    -h, --help       Prints help information \
+            \n    -V, --version    Prints version information \
+            \n \
+            \nARG: \
+            \n    <CONFIG>    A TOML config file",
+            package()
+        );
+        exit(0);
+    }
+    if args[1] == "--version" || args[1] == "-V" {
+        println!("{}", version());
+        exit(0);
+    }
+
+    Some(args[1].clone())
+}
+
+#[cfg(feature = "server")]
+fn version() -> &'static str {
+    env!("CARGO_PKG_VERSION")
+}
+
+#[cfg(feature = "server")]
+fn package() -> &'static str {
+    env!("CARGO_PKG_NAME")
 }
