@@ -6,8 +6,8 @@ use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
 pub struct Config {
-    _data_dir: PathBuf,
-    _backup_dir: PathBuf,
+    data_dir: PathBuf,
+    backup_dir: PathBuf,
 }
 
 impl Config {
@@ -35,7 +35,7 @@ impl Config {
         Ok(config)
     }
 
-    // pub async fn to_review(&self) -> Result<crate::review::Review> {
-    //     crate::review::Review::new(&self.data_dir, &self.backup_dir).await
-    // }
+    pub fn to_review(&self) -> Result<crate::review::Review> {
+        crate::review::Review::new(&self.data_dir, &self.backup_dir)
+    }
 }
