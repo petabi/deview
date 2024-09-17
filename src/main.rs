@@ -3,6 +3,8 @@
 mod components;
 #[cfg(feature = "server")]
 mod config;
+#[cfg(feature = "server")]
+mod review;
 
 use components::Footer;
 use dioxus::prelude::*;
@@ -31,15 +33,16 @@ fn main() {
         dioxus_logger::init(tracing::Level::INFO).expect("failed to init logger");
         tracing::info!("starting app");
 
-        let _config =
-            dbg!(config::Config::load_config(parse().as_deref()).expect("fail to load config"));
+        let config = config::Config::load_config(parse().as_deref()).expect("fail to load config");
         tokio::runtime::Runtime::new()
             .unwrap()
             .block_on(async move {
+                let review = config.to_review().expect("unable to open review-database");
                 let app = Router::new()
                     // Server side render the application, serve static assets, and register server functions
-                    .serve_dioxus_application(ServeConfig::builder().build(), || {
-                        VirtualDom::new(App)
+                    .serve_dioxus_application(ServeConfig::builder().build(), move || {
+                        let vd = VirtualDom::new(App);
+                        vd.with_root_context(review.clone())
                     })
                     .await;
                 let addr = std::net::SocketAddr::from(([127, 0, 0, 1], 8080));
