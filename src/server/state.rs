@@ -12,12 +12,12 @@ use tokio::sync::RwLock;
 
 #[cfg(feature = "server")]
 #[derive(Clone)]
-pub struct Review {
+pub struct State {
     store: Arc<RwLock<Store>>,
 }
 
 #[cfg(feature = "server")]
-impl Review {
+impl State {
     pub fn new<R: AsRef<Path>>(data: R, backup: R) -> Result<Self> {
         let store = Arc::new(RwLock::new(Store::new(data.as_ref(), backup.as_ref())?));
         Ok(Self { store })
@@ -71,8 +71,8 @@ pub(crate) async fn access_token_entries() -> Result<Vec<AccessToken>, ServerFnE
 }
 
 #[cfg(feature = "server")]
-pub(crate) async fn review() -> Result<Review, ServerFnError> {
+pub(crate) async fn review() -> Result<State, ServerFnError> {
     use axum::Extension;
-    let Extension(review): Extension<Review> = extract().await?;
+    let Extension(review): Extension<State> = extract().await?;
     Ok(review)
 }

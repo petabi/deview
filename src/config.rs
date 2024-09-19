@@ -35,7 +35,8 @@ impl Config {
         Ok(config)
     }
 
-    pub fn to_review(&self) -> Result<crate::review::Review> {
-        crate::review::Review::new(&self.data_dir, &self.backup_dir)
+    #[cfg(feature = "server")]
+    pub fn to_state(&self) -> Result<crate::server::State> {
+        crate::server::State::new(&self.data_dir, &self.backup_dir)
     }
 }
