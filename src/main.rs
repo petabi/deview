@@ -3,11 +3,12 @@
 mod components;
 #[cfg(feature = "server")]
 mod config;
-#[cfg(feature = "server")]
+
 mod review;
 
 use components::Footer;
 use dioxus::prelude::*;
+use review::AccessTokenEntry;
 
 #[derive(Clone, Routable, Debug, PartialEq, serde::Serialize, serde::Deserialize)]
 #[rustfmt::skip]
@@ -27,6 +28,7 @@ fn main() {
 
     #[cfg(feature = "server")]
     {
+        use axum::Extension;
         use axum::Router;
         use dioxus_logger::tracing;
 
@@ -41,10 +43,10 @@ fn main() {
                 let app = Router::new()
                     // Server side render the application, serve static assets, and register server functions
                     .serve_dioxus_application(ServeConfig::builder().build(), move || {
-                        let vd = VirtualDom::new(App);
-                        vd.with_root_context(review.clone())
+                        VirtualDom::new(App)
                     })
-                    .await;
+                    .await
+                    .layer(Extension(review));
                 let addr = std::net::SocketAddr::from(([127, 0, 0, 1], 8080));
                 let listener = tokio::net::TcpListener::bind(&addr).await.unwrap();
 
@@ -89,7 +91,32 @@ fn NavBar() -> Element {
 
 #[component]
 fn Home() -> Element {
-    rsx! {}
+    let mut count = use_signal(|| 0);
+    let input_style = r"
+        border: none;
+        border-radius: 10px;
+        box-shadow: 0px 0px 12px 4px rgba(0,0,0,0.74);
+    ";
+
+    rsx! {
+        h1 { "Counter: {count}" }
+        button { style: "{input_style}", onclick: move |_| count += 1, "Up!" }
+        button { style: "{input_style}",onclick: move |_| count -= 1, "Down!" }
+        button {
+            style: "{input_style}",
+            onclick: move |_| {
+                async move {
+                    if let Ok(access_tokens) = review::access_token_entries().await {
+                        count.set(access_tokens.len());
+                        for at in access_tokens {
+                            AccessTokenEntry(at);
+                        }
+                    }
+                }
+            },
+            "# of Access Tokens"
+        }
+    }
 }
 
 #[component]

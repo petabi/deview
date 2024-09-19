@@ -6,7 +6,7 @@ edition = "2021"
 [dependencies]
 anyhow = {version = "1.0.89", optional = true}
 axum = { version = "0.7.5", optional = true }
-config = { version = "0.14.0", optional = true }
+config = { version = "0.14.0", features = ["toml"], default-features = false, optional = true }
 dioxus = { version = "0.5", features = ["fullstack", "router"] }
 dioxus-logger = "0.5"
 dioxus-web = { version = "0.5.6", features = ["hydrate"], optional = true }
