@@ -3,12 +3,10 @@
 mod components;
 #[cfg(feature = "server")]
 mod config;
-
-mod review;
+mod server;
 
 use components::Footer;
 use dioxus::prelude::*;
-use review::AccessTokenEntry;
 
 #[derive(Clone, Routable, Debug, PartialEq, serde::Serialize, serde::Deserialize)]
 #[rustfmt::skip]
@@ -39,7 +37,7 @@ fn main() {
         tokio::runtime::Runtime::new()
             .unwrap()
             .block_on(async move {
-                let review = config.to_review().expect("unable to open review-database");
+                let review = config.to_state().expect("unable to open review-database");
                 let app = Router::new()
                     // Server side render the application, serve static assets, and register server functions
                     .serve_dioxus_application(ServeConfig::builder().build(), move || {
@@ -91,6 +89,9 @@ fn NavBar() -> Element {
 
 #[component]
 fn Home() -> Element {
+    use server::access_token_entries;
+    use server::AccessTokenEntry;
+
     let mut count = use_signal(|| 0);
     let input_style = r"
         border: none;
@@ -106,7 +107,7 @@ fn Home() -> Element {
             style: "{input_style}",
             onclick: move |_| {
                 async move {
-                    if let Ok(access_tokens) = review::access_token_entries().await {
+                    if let Ok(access_tokens) = access_token_entries().await {
                         count.set(access_tokens.len());
                         for at in access_tokens {
                             AccessTokenEntry(at);
