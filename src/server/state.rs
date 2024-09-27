@@ -47,6 +47,7 @@ pub struct AccessToken {
     token: String,
 }
 
+#[component]
 pub fn AccessTokenEntry(entry: AccessToken) -> Element {
     rsx! {
         h1 { "{entry.username}: ", {entry.token} }
