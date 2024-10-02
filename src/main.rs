@@ -77,7 +77,7 @@ fn NavBar() -> Element {
                     ul {
                         li {
                             style: "font: small-caps bold 24px sans-serif;",
-                            Link { to: Route::Home {}, style: "", "Deview" }
+                            Link { to: Route::Home {}, "Deview" }
                         }
                     }
                 }
@@ -103,72 +103,14 @@ fn NavBar() -> Element {
 fn Home() -> Element {
     rsx! {
         div {
-            class: "relative flex min-h-screen flex-col justify-center overflow-hidden py-12 sm:py-12",
+            class: "relative flex min-h-screen flex-col justify-center overflow-hidden",
             div {
-                class: "relative bg-transparent px-10 pb-8 pt-10 shadow-xl ring-1 ring-gray-900/5 sm:mx-auto sm:max-w-lg sm:rounded-lg sm:px-10",
-                h1 {
-                    style: "position: flex; flex-direction: row; font: small-caps bold sans-serif; gap: 8px;",
-                    a {
-                        href: "https://github.com/petabi/review-database",
-                        "review-database"
-                    }
-                    "Overview"
-                }
-                ul {
-                    class: "space-y-2 divide-y divide-gray-300",
-                    li {
-                        TableRow{}
-                    }
-                    li {
-                        TableRow{}
-                    }
-                }
+                class: "relative rounded-3xl bg-white shadow-xl ring-1 ring-gray-900/5",
+                style: "margin: 2%; padding: 5%;",
+                server::TableDigest{}
             }
         }
 
-    }
-}
-
-#[component]
-fn TableRow() -> Element {
-    use server::access_token_entries;
-    use server::AccessTokenEntry;
-
-    let mut count: Signal<Option<usize>> = use_signal(|| None);
-    let mut access_tokens = use_signal(Vec::new);
-
-    rsx! {
-        div {
-            style: "display: flex; flex-direction:row; gap: 4px;",
-            div {
-                h2 {
-                    onclick: move |_| {
-                        async move {
-                            if let Ok(entries) = access_token_entries().await {
-                                count.set(Some(entries.len()));
-                                access_tokens.extend(entries.into_iter().take(3));
-                            }
-                        }
-                    },
-                    "Access Tokens"
-                }
-            }
-            div {
-                p {
-                    if let Some(c) = count() {
-                        "{c}"
-                    } else {
-                        "N/A"
-                    }
-                }
-            }
-            div {
-                style: "flex-grow: 1",
-                for entry in access_tokens() {
-                    AccessTokenEntry { entry: entry }
-                }
-            }
-        }
     }
 }
 
