@@ -6,7 +6,9 @@ use dioxus::prelude::*;
 pub fn TableDigest() -> Element {
     rsx! {
         table {
-            style: "table-layout: fixed; width: 100%; border-collapse: collapse;",
+            style: "table-layout: fixed; overflow: scroll;
+                width: 100%;
+                border-collapse: collapse;",
             caption {
                 style: "font: small-caps bold 24px sans-serif; text-align: center; border-bottom: 1px solid rgba(0, 0, 0, 0.5)",
                     a {
