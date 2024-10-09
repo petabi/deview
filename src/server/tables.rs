@@ -1,9 +1,12 @@
 mod access_token;
 mod account;
+use std::str::FromStr;
+
 use dioxus::prelude::*;
+use strum_macros::EnumString;
 
 #[component]
-pub fn TableDigest() -> Element {
+pub fn Digest() -> Element {
     rsx! {
         table { style: "table-layout: fixed;
                 max-width: 100%; max-height: 600px;
@@ -39,5 +42,27 @@ pub fn TableDigest() -> Element {
                 }
             }
         }
+    }
+}
+
+#[derive(Debug, PartialEq, EnumString, strum_macros::Display)]
+#[strum(ascii_case_insensitive, serialize_all = "snake_case")]
+enum LookUp {
+    AccessToken,
+    Account,
+    Backup,
+}
+
+#[component]
+pub fn Table(name: String) -> Element {
+    match LookUp::from_str(&name) {
+        #[allow(clippy::match_single_binding)]
+        Ok(l) => match l {
+            _ => rsx! {},
+            // LookUp::AccessToken => rsx! {},
+            // LookUp::Account => rsx! {},
+            // LookUp::Backup => rsx! {},
+        },
+        Err(_) => rsx! {},
     }
 }
