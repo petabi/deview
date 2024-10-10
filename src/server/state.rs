@@ -5,7 +5,7 @@ use std::{path::Path, sync::Arc};
 use anyhow::{Context, Result};
 use dioxus::prelude::*;
 #[cfg(feature = "server")]
-use review_database::Store;
+use review_database::{migrate_data_dir, Store};
 use serde::{Deserialize, Serialize};
 #[cfg(feature = "server")]
 use tokio::sync::RwLock;
@@ -20,6 +20,7 @@ pub struct State {
 #[cfg(feature = "server")]
 impl State {
     pub fn new<R: AsRef<Path>>(data: R, backup: R) -> Result<Self> {
+        migrate_data_dir(data.as_ref(), backup.as_ref())?;
         let store = Arc::new(RwLock::new(Store::new(data.as_ref(), backup.as_ref())?));
         let version = data.as_ref().join("VERSION");
         let version = Self::read_version_file(version.as_path())?;
