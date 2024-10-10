@@ -64,7 +64,7 @@ pub fn BackupDigest() -> Element {
     let entries = use_server_future(backups)?;
     rsx! {
         tr {
-            th { style: "width: 200px; text-align: right;", scope: "row", "Backup"}
+            th { style: "width: 200px; text-align: right;", scope: "row", "Backup" }
             match entries() {
                 None => rsx!{td { colspan: 2, "Loading..." }},
                 Some(Err(e)) => rsx!{td {colspan: 2, "{e}"}},
@@ -132,7 +132,7 @@ pub(crate) fn Digest() -> Element {
     let version = use_server_future(version)?;
     rsx! {
         p {
-            "version: ",
+            "version: "
             match version() {
                 Some(Ok(v)) => v,
                 _ => "N/A".to_string(),

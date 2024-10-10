@@ -44,9 +44,7 @@ async fn accounts() -> Result<Vec<String>, ServerFnError> {
 #[component]
 fn Account(entry: String) -> Element {
     rsx! {
-        p {
-            "{entry}"
-        }
+        p { "{entry}" }
     }
 }
 
@@ -55,7 +53,7 @@ pub fn Digest() -> Element {
     let entries = use_server_future(accounts)?;
     rsx! {
         tr {
-            th { style: "width: 200px; text-align: right;", scope: "row", "Account"}
+            th { style: "width: 200px; text-align: right;", scope: "row", "Account" }
             match entries() {
                 None => rsx!{td { colspan: 2, "Loading..." }},
                 Some(Err(e)) => rsx!{td {colspan: 2, "{e}"}},

@@ -3,7 +3,7 @@ use dioxus::prelude::*;
 #[component]
 pub(crate) fn PageNotFound(route: Vec<String>) -> Element {
     rsx! {
-        super::Header{}
+        super::Header {}
 
         div {
             class: "relative rounded-3xl bg-white shadow-xl ring-1 ring-gray-900/5",
@@ -13,6 +13,6 @@ pub(crate) fn PageNotFound(route: Vec<String>) -> Element {
             pre { color: "red", "log:\nattemped to navigate to: {route:?}" }
         }
 
-        super::Footer{}
+        super::Footer {}
     }
 }

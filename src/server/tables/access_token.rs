@@ -42,9 +42,10 @@ pub struct ATokenProps {
 #[component]
 fn Entry(entry: ATokenProps) -> Element {
     rsx! {
-        h1 {
-            style: "word-break: break-word;",
-             "{entry.username}: ", {entry.token} }
+        h1 { style: "word-break: break-word;",
+            "{entry.username}: "
+            {entry.token}
+        }
     }
 }
 
@@ -63,7 +64,7 @@ pub(crate) fn Digest() -> Element {
     let entries = use_server_future(access_token_entries)?;
     rsx! {
         tr {
-            th { style: "width: 200px; text-align: right;", scope: "row", "Access Token"}
+            th { style: "width: 200px; text-align: right;", scope: "row", "Access Token" }
             match entries() {
                 None => rsx!{td {colspan: 2, "Loading..."}},
                 Some(Err(e)) => rsx!{td {colspan: 2, "{e}"}},
