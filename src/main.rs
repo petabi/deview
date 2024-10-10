@@ -35,10 +35,16 @@ fn main() {
         tracing::info!("starting app");
 
         let config = config::Config::load_config(parse().as_deref()).expect("fail to load config");
+        let review = match config.to_state() {
+            Ok(state) => state,
+            Err(e) => {
+                tracing::error!("failed to load state: {}", e);
+                std::process::exit(1);
+            }
+        };
         tokio::runtime::Runtime::new()
             .unwrap()
             .block_on(async move {
-                let review = config.to_state().expect("unable to open review-database");
                 let app = Router::new()
                     // Server side render the application, serve static assets, and register server functions
                     .serve_dioxus_application(ServeConfig::builder().build(), move || {
@@ -66,15 +72,13 @@ fn App() -> Element {
 #[component]
 fn Home() -> Element {
     rsx! {
-        div {
-            class: "flex min-h-screen flex-col justify-center overflow-scroll",
+        div { class: "flex min-h-screen flex-col justify-center overflow-scroll",
             div {
                 class: "rounded-3xl bg-white shadow-xl ring-1 ring-gray-900/5",
                 style: "margin: 2%; padding: 5%; overflow: scroll;",
-                server::TableDigest{}
+                server::TableDigest {}
             }
         }
-
     }
 }
 
