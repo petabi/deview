@@ -34,10 +34,20 @@ fn main() {
         use axum::Router;
         use dioxus_logger::tracing;
 
-        dioxus_logger::init(tracing::Level::INFO).expect("failed to init logger");
+        if let Err(e) = dioxus_logger::init(tracing::Level::INFO) {
+            println!("failed to initiate logger {e:?}");
+            std::process::exit(1);
+        }
         tracing::info!("starting app");
 
-        let config = config::Config::load_config(parse().as_deref()).expect("fail to load config");
+        let config = match config::Config::load_config(parse().as_deref()) {
+            Ok(c) => c,
+            Err(e) => {
+                tracing::error!("failed to load config: {e}");
+                std::process::exit(1);
+            }
+        };
+
         let review = match config.to_state() {
             Ok(state) => state,
             Err(e) => {
