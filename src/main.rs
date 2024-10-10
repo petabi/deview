@@ -8,6 +8,7 @@ mod server;
 use dioxus::prelude::*;
 
 use crate::components::PageNotFound;
+use crate::server::Table;
 
 #[derive(Clone, Routable, Debug, PartialEq, serde::Serialize, serde::Deserialize)]
 #[rustfmt::skip]
@@ -15,6 +16,8 @@ enum Route {
     #[layout(components::Wrapper)]
         #[route("/")]
         Home {},
+        #[route("/table/:name")]
+        Table { name: String },
     #[end_layout]
     #[route("/:..route")]
     PageNotFound { route: Vec<String> },

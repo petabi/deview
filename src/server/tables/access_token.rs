@@ -64,7 +64,12 @@ pub(crate) fn Digest() -> Element {
     let entries = use_server_future(access_token_entries)?;
     rsx! {
         tr {
-            th { style: "width: 200px; text-align: right;", scope: "row", "Access Token" }
+            th { style: "width: 200px; text-align: right;", scope: "row",
+                Link {
+                    to: crate::Route::Table { name: super::LookUp::AccessToken.to_string() },
+                    "Access Tokens"
+                }
+            }
             match entries() {
                 None => rsx!{td {colspan: 2, "Loading..."}},
                 Some(Err(e)) => rsx!{td {colspan: 2, "{e}"}},
