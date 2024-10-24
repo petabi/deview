@@ -12,6 +12,9 @@ pub(crate) fn NavBar() -> Element {
                 li { style: "font: small-caps bold 24px sans-serif;",
                     Link { to: Route::Home {}, "Deview" }
                 }
+                li {
+                    Link { to: Route::Home {}, "Home" }
+                }
             }
         }
     }

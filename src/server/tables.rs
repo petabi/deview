@@ -58,9 +58,10 @@ pub fn Table(name: String) -> Element {
     match LookUp::from_str(&name) {
         #[allow(clippy::match_single_binding)]
         Ok(l) => match l {
-            _ => rsx! {},
-            // LookUp::AccessToken => rsx! {},
-            // LookUp::Account => rsx! {},
+            LookUp::AccessToken => access_token::Full(),
+            LookUp::Account => account::Full(),
+            _ => crate::components::Coming(),
+            //
             // LookUp::Backup => rsx! {},
         },
         Err(_) => rsx! {},

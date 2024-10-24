@@ -53,7 +53,14 @@ pub fn Digest() -> Element {
     let entries = use_server_future(accounts)?;
     rsx! {
         tr {
-            th { style: "width: 200px; text-align: right;", scope: "row", "Account" }
+            th { style: "width: 200px; text-align: right;", scope: "row",
+                Link {
+                    to: crate::Route::Table {
+                        name: super::LookUp::Account.to_string(),
+                    },
+                    "Account"
+                }
+            }
             match entries() {
                 None => rsx!{td { colspan: 2, "Loading..." }},
                 Some(Err(e)) => rsx!{td {colspan: 2, "{e}"}},
@@ -65,6 +72,78 @@ pub fn Digest() -> Element {
                                 li {
                                     Account { entry: entry }
                                 }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+#[component]
+fn Columns(entry: String) -> Element {
+    let entry: serde_json::Value = serde_json::from_str(&entry).ok()?;
+
+    if let serde_json::Value::Object(entry) = entry {
+        let mut entry: Vec<_> = entry.into_iter().map(|(k, _v)| k).collect();
+        entry.sort_unstable();
+        rsx! {
+            tr {
+                for k in entry {
+                    th { scope: "col", "{k}" }
+                }
+            }
+        }
+    } else {
+        rsx! {}
+    }
+}
+
+#[component]
+fn Row(entry: String) -> Element {
+    let entry: serde_json::Value = serde_json::from_str(&entry).ok()?;
+    if let serde_json::Value::Object(entry) = entry {
+        let mut entry: Vec<_> = entry.into_iter().collect();
+        entry.sort_unstable_by(|a, b| a.0.cmp(&b.0));
+        rsx! {
+            tr {
+                for (_k , v) in entry {
+                    td { "{v}" }
+                }
+            }
+        }
+    } else {
+        rsx! {
+            tr {
+                td { "{entry}" }
+            }
+        }
+    }
+}
+
+#[component]
+pub(crate) fn Full() -> Element {
+    let entries = use_server_future(accounts)?;
+    rsx! {
+        table { style: "table-layout: fixed;
+                max-width: 100%; max-height: 600px;
+                overflow: auto; display: block;
+                border-spacing: 0;",
+            caption { style: "font: small-caps bold 24px sans-serif; text-align: center; border-bottom: 1px solid rgba(0, 0, 0, 0.5)",
+                "Account"
+            }
+            thead {
+                match entries() {
+                    None => rsx!{td {colspan: 2, "Loading..."}},
+                    Some(Err(e)) => rsx!{td {colspan: 2, "{e}"}},
+                    Some(Ok(entries)) => {
+                        rsx!{
+                            if let Some(entry) = entries.first() {
+                                Columns{ entry }
+                            }
+                            for entry in entries.into_iter() {
+                                Row { entry }
                             }
                         }
                     }
