@@ -49,6 +49,16 @@ fn Entry(entry: ATokenProps) -> Element {
     }
 }
 
+#[component]
+fn Row(entry: ATokenProps) -> Element {
+    rsx! {
+        tr {
+            th { "{entry.username}" }
+            td { "{entry.token}" }
+        }
+    }
+}
+
 #[cfg(feature = "server")]
 impl From<review_database::AccessToken> for ATokenProps {
     fn from(input: review_database::AccessToken) -> Self {
@@ -66,7 +76,9 @@ pub(crate) fn Digest() -> Element {
         tr {
             th { style: "width: 200px; text-align: right;", scope: "row",
                 Link {
-                    to: crate::Route::Table { name: super::LookUp::AccessToken.to_string() },
+                    to: crate::Route::Table {
+                        name: super::LookUp::AccessToken.to_string(),
+                    },
                     "Access Tokens"
                 }
             }
@@ -82,6 +94,40 @@ pub(crate) fn Digest() -> Element {
                                     Entry { entry: entry.clone() }
                                 }
                             }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+#[component]
+pub(crate) fn Full() -> Element {
+    let entries = use_server_future(access_token_entries)?;
+    rsx! {
+        table { style: "table-layout: fixed;
+                max-width: 100%; max-height: 600px;
+                overflow: auto; display: block;
+                border-spacing: 0;",
+            caption { style: "font: small-caps bold 24px sans-serif; text-align: center; border-bottom: 1px solid rgba(0, 0, 0, 0.5)",
+                "Access Tokens"
+            }
+            thead {
+                tr { style: "position: sticky; top: 0; background: rgba(0, 0, 0, 0.1);",
+                    th {
+                        style: "width: 200px; text-align: right;",
+                        scope: "col",
+                        "User Name"
+                    }
+                    th { scope: "col", "Token" }
+                }
+                match entries() {
+                    None => rsx!{td {colspan: 2, "Loading..."}},
+                    Some(Err(e)) => rsx!{td {colspan: 2, "{e}"}},
+                    Some(Ok(entries)) => rsx!{
+                        for entry in entries.into_iter() {
+                            Row { entry }
                         }
                     }
                 }

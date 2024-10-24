@@ -47,7 +47,7 @@ pub fn Digest() -> Element {
 
 #[derive(Debug, PartialEq, EnumString, strum_macros::Display)]
 #[strum(ascii_case_insensitive, serialize_all = "snake_case")]
-enum LookUp {
+pub(crate) enum LookUp {
     AccessToken,
     Account,
     Backup,
@@ -58,11 +58,10 @@ pub fn Table(name: String) -> Element {
     match LookUp::from_str(&name) {
         #[allow(clippy::match_single_binding)]
         Ok(l) => match l {
-            _ => rsx! {},
-            // LookUp::AccessToken => rsx! {},
-            // LookUp::Account => rsx! {},
-            // LookUp::Backup => rsx! {},
+            LookUp::AccessToken => access_token::Full(),
+            LookUp::Account => account::Full(),
+            LookUp::Backup => super::state::Full(),
         },
-        Err(_) => rsx! {},
+        Err(_) => crate::components::Coming(),
     }
 }
