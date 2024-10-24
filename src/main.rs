@@ -26,7 +26,9 @@ enum Route {
 fn main() {
     #[cfg(feature = "web")]
     // Hydrate the application on the client
-    dioxus_web::launch::launch_cfg(App, dioxus_web::Config::new().hydrate(true));
+    dioxus::prelude::LaunchBuilder::new()
+        .with_cfg(web!(dioxus_web::Config::new().hydrate(true)))
+        .launch(App);
 
     #[cfg(feature = "server")]
     {

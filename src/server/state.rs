@@ -65,7 +65,14 @@ pub fn BackupDigest() -> Element {
     let entries = use_server_future(backups)?;
     rsx! {
         tr {
-            th { style: "width: 200px; text-align: right;", scope: "row", "Backup" }
+            th { style: "width: 200px; text-align: right;", scope: "row",
+                Link {
+                    to: crate::Route::Table {
+                        name: super::tables::LookUp::Backup.to_string(),
+                    },
+                    "Backups"
+                }
+            }
             match entries() {
                 None => rsx!{td { colspan: 2, "Loading..." }},
                 Some(Err(e)) => rsx!{td {colspan: 2, "{e}"}},
@@ -77,6 +84,59 @@ pub fn BackupDigest() -> Element {
                                 li {
                                     Backup { entry: entry }
                                 }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+#[component]
+fn Columns() -> Element {
+    let columns = &["ID", "Size", "Number of files", "Time"];
+    rsx! {
+        tr {
+            for col in columns {
+                th { scope: "col", "{col}" }
+            }
+        }
+    }
+}
+
+#[component]
+fn Row(entry: BackupEngineInfoProps) -> Element {
+    rsx! {
+        tr {
+            td { "{entry.backup_id}" }
+            td { "{entry.size}" }
+            td { "{entry.num_files}" }
+            td { "{entry.timestamp}" }
+        }
+    }
+}
+
+#[component]
+pub(crate) fn Full() -> Element {
+    let entries = use_server_future(backups)?;
+    rsx! {
+        table { style: "table-layout: fixed;
+                max-width: 100%; max-height: 600px;
+                overflow: auto; display: block;
+                border-spacing: 0;",
+            caption { style: "font: small-caps bold 24px sans-serif; text-align: center; border-bottom: 1px solid rgba(0, 0, 0, 0.5)",
+                "Account"
+            }
+            thead {
+                match entries() {
+                    None => rsx!{td {colspan: 2, "Loading..."}},
+                    Some(Err(e)) => rsx!{td {colspan: 2, "{e}"}},
+                    Some(Ok(entries)) => {
+                        rsx!{
+                            Columns{}
+                            for entry in entries.into_iter() {
+                                Row { entry }
                             }
                         }
                     }
