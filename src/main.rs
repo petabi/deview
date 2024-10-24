@@ -8,6 +8,7 @@ mod server;
 use dioxus::prelude::*;
 
 use crate::components::PageNotFound;
+use crate::server::Table;
 
 #[derive(Clone, Routable, Debug, PartialEq, serde::Serialize, serde::Deserialize)]
 #[rustfmt::skip]
@@ -15,6 +16,8 @@ enum Route {
     #[layout(components::Wrapper)]
         #[route("/")]
         Home {},
+        #[route("/table/:name")]
+        Table { name: String },
     #[end_layout]
     #[route("/:..route")]
     PageNotFound { route: Vec<String> },
@@ -23,7 +26,9 @@ enum Route {
 fn main() {
     #[cfg(feature = "web")]
     // Hydrate the application on the client
-    dioxus_web::launch::launch_cfg(App, dioxus_web::Config::new().hydrate(true));
+    dioxus::prelude::LaunchBuilder::new()
+        .with_cfg(web! {dioxus_web::Config::new().hydrate(true)})
+        .launch(App);
 
     #[cfg(feature = "server")]
     {
@@ -31,10 +36,20 @@ fn main() {
         use axum::Router;
         use dioxus_logger::tracing;
 
-        dioxus_logger::init(tracing::Level::INFO).expect("failed to init logger");
+        if let Err(e) = dioxus_logger::init(tracing::Level::INFO) {
+            println!("failed to initiate logger {e:?}");
+            std::process::exit(1);
+        }
         tracing::info!("starting app");
 
-        let config = config::Config::load_config(parse().as_deref()).expect("fail to load config");
+        let config = match config::Config::load_config(parse().as_deref()) {
+            Ok(c) => c,
+            Err(e) => {
+                tracing::error!("failed to load config: {e}");
+                std::process::exit(1);
+            }
+        };
+
         let review = match config.to_state() {
             Ok(state) => state,
             Err(e) => {
