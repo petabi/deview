@@ -53,6 +53,7 @@ fn Entry(entry: ATokenProps) -> Element {
 fn Row(entry: ATokenProps) -> Element {
     rsx! {
         tr {
+            class: "odd:bg-white even:bg-gray-100",
             th { "{entry.username}" }
             td { "{entry.token}" }
         }
@@ -76,6 +77,7 @@ pub(crate) fn Digest() -> Element {
         tr {
             th { style: "width: 200px; text-align: right;", scope: "row",
                 Link {
+                    class: "hover:bg-gray-100",
                     to: crate::Route::Table {
                         name: super::LookUp::AccessToken.to_string(),
                     },
@@ -107,7 +109,7 @@ pub(crate) fn Full() -> Element {
     let entries = use_server_future(access_token_entries)?;
     rsx! {
         table { style: "table-layout: fixed;
-                max-width: 100%; max-height: 600px;
+                max-width: 1200px; max-height: 1200px;
                 overflow: auto; display: block;
                 border-spacing: 0;",
             caption { style: "font: small-caps bold 24px sans-serif; text-align: center; border-bottom: 1px solid rgba(0, 0, 0, 0.5)",

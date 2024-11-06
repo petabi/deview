@@ -55,6 +55,7 @@ pub fn Digest() -> Element {
         tr {
             th { style: "width: 200px; text-align: right;", scope: "row",
                 Link {
+                    class: "hover:bg-gray-100",
                     to: crate::Route::Table {
                         name: super::LookUp::Account.to_string(),
                     },
@@ -108,6 +109,7 @@ fn Row(entry: String) -> Element {
         entry.sort_unstable_by(|a, b| a.0.cmp(&b.0));
         rsx! {
             tr {
+                class: "odd:bg-white even:bg-slate-50",
                 for (_k , v) in entry {
                     td { "{v}" }
                 }
@@ -127,11 +129,11 @@ pub(crate) fn Full() -> Element {
     let entries = use_server_future(accounts)?;
     rsx! {
         table { style: "table-layout: fixed;
-                max-width: 100%; max-height: 600px;
+                max-width: 1200px; max-height: 1200px;
                 overflow: auto; display: block;
                 border-spacing: 0;",
             caption { style: "font: small-caps bold 24px sans-serif; text-align: center; border-bottom: 1px solid rgba(0, 0, 0, 0.5)",
-                "Account"
+                "account"
             }
             thead {
                 match entries() {
