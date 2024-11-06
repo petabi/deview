@@ -10,6 +10,7 @@ config = { version = "0.14.0", features = ["toml"], default-features = false, op
 dioxus = { version = "0.5.6", features = ["fullstack", "router"] }
 dioxus-logger = "0.5"
 dioxus-web = { version = "0.5.6", features = ["hydrate"], optional = true }
+manganis = { version = "0.2.2", optional = true }
 review-database = { git = "https://github.com/petabi/review-database.git", tag = "0.30.0", optional = true }
 serde = { version = "1", features = ["derive"] }
 serde_json = { version = "1.0.128" }
@@ -26,4 +27,4 @@ tokio = { version = "1.16.1", default-features = false, features = [
 [features]
 default = []
 server = ["dioxus/axum", "tokio", "axum", "config", "anyhow", "review-database"]
-web = ["dioxus-web"]
+web = ["dioxus-web", "manganis"]

@@ -79,7 +79,11 @@ fn main() {
 
 #[cfg(any(feature = "server", feature = "web"))]
 fn App() -> Element {
+    let asset = format!("{}/assets/tailwind.css", env!("CARGO_MANIFEST_DIR"));
+    let tailwind = std::fs::read_to_string(&asset).unwrap_or_default();
+
     rsx! {
+        style { {tailwind.as_str()} }
         Router::<Route> {}
     }
 }

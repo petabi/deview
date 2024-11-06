@@ -19,16 +19,20 @@ pub fn Digest() -> Element {
             thead {
                 tr { style: "position: sticky; top: 0; background: rgba(0, 0, 0, 0.1);",
                     th {
-                        style: "width: 200px; text-align: right;",
+                        style: "width: 20%; text-align: right;",
                         scope: "col",
                         "Table Name"
                     }
                     th {
-                        style: "width: 100px; text-align: center;",
+                        style: "width: 20%; text-align: center;",
                         scope: "col",
                         "Count"
                     }
-                    th { scope: "col", "Samples" }
+                    th {
+                        style: "width: 60%;",
+                        scope: "col",
+                        "Samples"
+                    }
                 }
             }
             tbody { style: "vertical-align: top;",
